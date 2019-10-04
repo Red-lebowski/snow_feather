@@ -1,0 +1,8 @@
+config.ini
+write_to_file.py
+__pycache__/
+*.csv
+.gitignore
+logs/*
+launch.json
+run.py
