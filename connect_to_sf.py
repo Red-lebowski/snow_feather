@@ -1,6 +1,19 @@
 import configparser
 from snowflake.connector import connect, DictCursor, errors
 
+def get_config_info(key):
+    config = configparser.RawConfigParser()
+    config.read('snow_feather_config.ini')
+    config_section = config['DEFAULT']
+
+    try:
+        item = config_section[key]
+    except KeyError:
+        print(f"Error: Couldn't find {key} in config file")
+        exit()
+        return False
+    return item
+
 
 def create_connection(config_profile='DEFAULT'):
     '''creates a connection from ini file
@@ -8,25 +21,22 @@ def create_connection(config_profile='DEFAULT'):
     :param config_profile: config profile name
     :returns: snowflake connection object
     '''
-
-    config = configparser.RawConfigParser()
-    config.read('config.ini')
-    config_section = config[config_profile]
-
-    config_keys = config_section.keys()
-    for key in ['User', 'Password', 'Account', 'Warehouse', 'Database', 'Role']:
-        if not key in config_keys: 
+    
+    for key in ['SnowflakeUser','SnowflakePassword','SnowflakeAccount','SnowflakeWarehouse','SnowflakeDatabase','SnowflakeRole']:
+        item = get_config_info(key)
+        if not item: 
             print(f'{key} missing from ini file')
             exit()
 
     conn = connect(
-        user      =config_section['SnowflakeUser'],
-        password  =config_section['SnowflakePassword'],
-        account   =config_section['SnowflakeAccount'],
-        warehouse =config_section['SnowflakeWarehouse'],
-        database  =config_section['SnowflakeDatabase'],
-        role      =config_section['SnowflakeRole']
+        user      =get_config_info('SnowflakeUser'),
+        password  =get_config_info('SnowflakePassword'),
+        account   =get_config_info('SnowflakeAccount'),
+        warehouse =get_config_info('SnowflakeWarehouse'),
+        database  =get_config_info('SnowflakeDatabase'),
+        role      =get_config_info('SnowflakeRole')
     )
+    print('Connected to Snowflake.')
     return conn
     
 
