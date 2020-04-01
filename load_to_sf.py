@@ -1,8 +1,8 @@
 import logging
 import configparser
 
-from connect_to_sf import run_sql
-
+from .connect_to_sf import run_sql
+from .s3_utils import upload_file_to_s3
 
 def load_file_with_stage(conn
                         , file_path
